@@ -1,25 +1,137 @@
-import logo from './logo.svg';
+import React, { Component } from 'react';
+import { Route } from 'react-router-dom';
 import './App.css';
+//import dummyStore from './dummy-store';
+import Header from './Header/Header';
+import FolderListNav from './FolderListNav/FolderListNav';
+import NoteList from './NoteList/NoteList.js';
+import NoteMain from './NoteMain/NoteMain';
+//import {getNotesForFolder, findNote, findFolder} from './note-helpers';
+import BackButton from './BackButton/BackButton';
+import NoteNav from './NoteNav/NoteNav';
+import NotesContext from './NotesContext';
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+
+
+class App extends Component {
+  state={
+    folders: [],
+    notes: [],
+    error: null,
+  }
+
+  setInfoState = (folders, notes) => {
+    this.setState({
+      folders,
+      notes,
+      error: null,
+    })
+  }
+
+
+  addFolder = folder => {
+    this.setState({
+      folders: [ ...this.state.folders, folder],
+    })
+  }
+
+  addNote = note => {
+    this.setState({
+      notes: [ ...this.state.notes, note],
+    })
+  }
+
+  deleteNote = noteId => {
+    const newNotes = this.state.notes.filter( nt => 
+      nt.id !== noteId
+      )
+    this.setState({
+      notes: newNotes,
+    })
+  }
+
+  componentDidMount() {
+    fetch('http://localhost:9090/db', {
+      method: 'GET',
+      headers: {
+        'content-type': 'application/json',
+      }
+    })
+      .then(res => {
+        if(!res.ok){
+          throw new Error(res.status)
+        }
+        return res.json()
+      })
+      .then(res => {
+        this.setInfoState(res.folders,res.notes)
+      })
+      .catch(error => this.setState( { error }))
+  }
+
+  render(){
+
+    const contexValue = {
+      folders: this.state.folders,
+      notes: this.state.notes,
+      addFolder: this.addFolder,
+      addNote: this.addNote,
+      deleteNote: this.deleteNote,
+    };
+
+    return (
+      <div className="App">
+        <NotesContext.Provider value={contexValue}>
+          <Header />
+          <nav className="Nav-Folders">
+
+            {['/','/folder/:folderId'].map(pth =>
+              <Route
+                key={pth}
+                exact
+                path={pth}
+                component={FolderListNav}
+              />
+            )}
+            
+            <Route
+              path='/note/:noteId'
+              component={NoteNav}
+            />
+            <Route path='/add-folder' render={() => <BackButton />} />
+            <Route path='/add-note' render={() => <BackButton />} />
+          </nav>
+          <main>
+
+            {['/','/folder/:folderId'].map(pth =>
+              <Route
+                key={pth}
+                exact
+                path={pth}
+                component={NoteList}
+              />
+            )}
+
+            <Route
+                path='/note/:noteId'
+                component={NoteMain}
+            />
+
+            <Route
+              path='/add-folder'
+              render={() => <div>Add folder form</div>} 
+            />
+
+            <Route
+              path='/add-note'
+              render={() => <div>Add note form</div>} 
+            />
+
+          </main>
+        </NotesContext.Provider>
+      </div>
+    );
+  }
 }
 
 export default App;
