@@ -11,8 +11,9 @@ export default class NoteMain extends Component {
     const note = findNote(this.context.notes, noteId);
     return (
       <section className='NoteMain'>
+        
         <Note
-          id={note.id}
+          id={noteId}
           name={note.name}
         />
         <div className='NoteMain__content'>
