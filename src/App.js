@@ -10,6 +10,8 @@ import NoteMain from './NoteMain/NoteMain';
 import BackButton from './BackButton/BackButton';
 import NoteNav from './NoteNav/NoteNav';
 import NotesContext from './NotesContext';
+import AddNote from './AddNote/AddNote';
+import AddFolder from './AddFolder/AddFolder';
 
 
 
@@ -119,12 +121,12 @@ class App extends Component {
 
             <Route
               path='/add-folder'
-              render={() => <div>Add folder form</div>} 
+              component={AddFolder}
             />
 
             <Route
               path='/add-note'
-              render={() => <div>Add note form</div>} 
+              component={AddNote} 
             />
 
           </main>

@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { Link, useHistory } from 'react-router-dom'
+import { Link, withRouter } from 'react-router-dom'
 import NotesContext from '../NotesContext'
 //import { format } from 'date-fns'
 
@@ -26,10 +26,22 @@ import NotesContext from '../NotesContext'
 //     })
 // }
 
-export default class Note extends Component {
+// import { withRouter } from 'react-router-dom'
+// // this also works with react-router-native
+
+// const Button = withRouter(({ history }) => (
+//   <button
+//     type='button'
+//     onClick={() => { history.push('/new-location') }}
+//   >
+//     Click Me!
+//   </button>
+// ))
+
+class Note extends Component {
   static contextType = NotesContext;
 
-  deleteNoteRequest(noteId, callback, history){
+  deleteNoteRequest(noteId, callback){
     fetch(`http://localhost:9090/notes/${noteId}`, {
       method: 'DELETE',
       headers: {
@@ -45,8 +57,8 @@ export default class Note extends Component {
         return res.json()
       })
       .then(data => {
-        history.push('/');
         callback(noteId);
+        this.props.history.push('/');
       })
       .catch(error => {
         console.error(error)
@@ -54,7 +66,6 @@ export default class Note extends Component {
   }
 
   render(){
-    let history = useHistory();
     const note = this.props;
     const { deleteNote } = this.context; 
     return (
@@ -64,20 +75,23 @@ export default class Note extends Component {
             {note.name}
           </Link>
         </h2>
-        <button className='Note__delete' type='button' onClick={() => this.deleteNoteRequest(note.id, deleteNote, history)}>
+        <button className='Note__delete' type='button' onClick={() => this.deleteNoteRequest(note.id, deleteNote)}>
           Delete
         </button>
-        <div className='Note__dates'>
+        {/* <div className='Note__dates'>
           <div className='Note__dates-modified'>
             Modified
             {' '}
-            {/* <span className='Date'>
-              {format(props.modified, 'Do MMM YYYY')}
-            </span> */}
+            <span className='Date'>
+              {format(this.props.modified, 'Do MMM YYYY')}
+            </span>
           </div>
-        </div>
+          
+        </div> */}
       </div>
-)
+    )
   }
   
 }
+
+export default withRouter(Note);

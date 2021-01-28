@@ -6,12 +6,17 @@ import { findNote } from '../note-helpers';
 
 export default class NoteMain extends Component {
   static contextType = NotesContext;
+  
   render(){
     const {noteId} = this.props.match.params;
     const note = findNote(this.context.notes, noteId);
+    
+    if(!note){
+      return null
+    }
+
     return (
       <section className='NoteMain'>
-        
         <Note
           id={noteId}
           name={note.name}
