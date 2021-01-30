@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import Note from '../Note/Note'
 import NotesContext from '../NotesContext';
 import { findNote } from '../note-helpers';
+import ErrorBoundry from '../ErrorBoundry';
 
 
 export default class NoteMain extends Component {
@@ -17,10 +18,11 @@ export default class NoteMain extends Component {
 
     return (
       <section className='NoteMain'>
-        <Note
-          id={noteId}
-          name={note.name}
-        />
+        <ErrorBoundry>
+          <Note
+            {...note}
+          />
+        </ErrorBoundry>
         <div className='NoteMain__content'>
           {note.content.split(/\n \r|\n/).map((para, i) =>
             <p key={i}>{para}</p>

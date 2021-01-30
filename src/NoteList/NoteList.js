@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import Note from '../Note/Note';
 import {getNotesForFolder} from '../note-helpers';
 import NotesContext from '../NotesContext';
+import ErrorBoundry from '../ErrorBoundry';
 
 
 
@@ -19,10 +20,11 @@ export default class NoteList extends Component {
             <ul className="Folders__List">
                 {notesForFolder.map(note => 
                     <li key={note.id}>
-                        <Note
-                            id={note.id}
-                            name={note.name}
-                        />
+                        <ErrorBoundry>
+                            <Note
+                                {...note}
+                            />    
+                        </ErrorBoundry>
                     </li>)
                 }
             </ul>

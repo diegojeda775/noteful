@@ -23,9 +23,15 @@ class App extends Component {
   }
 
   setInfoState = (folders, notes) => {
+    const _notes = notes.map(note => {
+      return {
+        ...note,
+        modified: new Date(note.modified)
+      }
+    })
     this.setState({
       folders,
-      notes,
+      notes: _notes,
       error: null,
     })
   }

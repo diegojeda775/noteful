@@ -22,7 +22,7 @@ export default class AddFolder extends Component{
 
     handleSubmit = e => {
         e.preventDefault();
-        const { name } = this.state.name.value;
+        const  name  = this.state.name.value;
         const folder = {
             id: this.state.folderId,
             name: name,
@@ -43,8 +43,12 @@ export default class AddFolder extends Component{
         return res.json()
       })
       .then(data => {
-        name.value = '';
-      //  title.touched = ''
+        this.setState({
+          name: {
+            value: '',
+            touched: false,
+          }
+        });
         this.context.addFolder(folder);
         this.props.history.push('/');
       })
@@ -81,17 +85,17 @@ export default class AddFolder extends Component{
 
     validateName() {
       const name = this.state.name.value;
-      this.context.folders.forEach(folder => {
-        if(folder.name === name){
-          return `A folder named ${folder.name} already exists. Try another name.`
-        }
-      });
+      
       if (name.length === 0) {
-        return 'Name is required';}
-      // } else if (confilctedName) {
-      //   return `A folder with ${confilctedName} name already exists. Please input another name`;
-      // }
-      // return false;
+        return 'Name is required';
+      }
+
+      const checkedName = this.context.folders.find(folder => folder.name === name)
+
+      if (checkedName) {
+      return `A folder named ${name} already exists. Try another name.`
+      }      
+
     }
     
 
@@ -115,9 +119,10 @@ export default class AddFolder extends Component{
                           id='title'
                           onChange={e => this.updateName(e.target.value)}
                       />
-                      {this.state.name.touched &&
-                      (<ValidationError message={this.validateName()}/>)}
+                      
                   </div>
+                  {this.state.name.touched &&
+                      (<ValidationError message={this.validateName()}/>)}
                   <div>
                       <button type='button' onClick={this.handleCancel}>Cancel</button>
                       <button type='submint'disabled={this.validateName()}>Save</button>
